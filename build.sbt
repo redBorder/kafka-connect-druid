@@ -64,7 +64,6 @@ libraryDependencies ++= Seq(
 assemblyMergeStrategy in assembly := {
   case PathList("org", "eclipse", "aether", xs@_*) => MergeStrategy.first
   case PathList("META-INF", "sisu", xs@_*) => MergeStrategy.discard
-  case PathList("javax", xs@_*) => MergeStrategy.deduplicate
   case "META-INF/services/io.druid.initialization.DruidModule" => MergeStrategy.concat
   case x =>
     val oldStrategy = (assemblyMergeStrategy in assembly).value

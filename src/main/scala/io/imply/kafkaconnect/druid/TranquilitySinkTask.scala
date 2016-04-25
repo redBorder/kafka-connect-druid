@@ -113,7 +113,7 @@ class TranquilitySinkTask extends SinkTask with Logging
   }
 }
 
-object TranquilitySinkTask extends Logging
+object TranquilitySinkTask
 {
   def convert(sinkRecord: SinkRecord): ju.Map[String, AnyRef] = {
     val value = sinkRecord.value()
