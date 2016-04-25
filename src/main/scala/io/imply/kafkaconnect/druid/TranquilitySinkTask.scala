@@ -16,7 +16,7 @@
 
 package io.imply.kafkaconnect.druid
 
-import com.metamx.common.scala.Logging
+import com.metamx.common.scala.{Jackson, Logging}
 import com.metamx.tranquility.druid.DruidBeams
 import com.metamx.tranquility.tranquilizer.MessageDroppedException
 import com.metamx.tranquility.tranquilizer.Tranquilizer
@@ -25,12 +25,14 @@ import com.twitter.util.Throw
 import java.util.concurrent.atomic.AtomicLong
 import java.util.concurrent.atomic.AtomicReference
 import java.{util => ju}
+
 import org.apache.kafka.clients.consumer.OffsetAndMetadata
 import org.apache.kafka.common.TopicPartition
 import org.apache.kafka.connect.data.Schema
 import org.apache.kafka.connect.data.Struct
 import org.apache.kafka.connect.sink.SinkRecord
 import org.apache.kafka.connect.sink.SinkTask
+
 import scala.collection.JavaConverters._
 
 class TranquilitySinkTask extends SinkTask with Logging
@@ -111,7 +113,7 @@ class TranquilitySinkTask extends SinkTask with Logging
   }
 }
 
-object TranquilitySinkTask
+object TranquilitySinkTask extends Logging
 {
   def convert(sinkRecord: SinkRecord): ju.Map[String, AnyRef] = {
     val value = sinkRecord.value()
@@ -129,6 +131,10 @@ object TranquilitySinkTask
         (for (field <- valueSchema.fields().asScala) yield {
           (field.name(), valueAsStruct.get(field))
         }).toMap
+
+      case Schema.Type.STRING =>
+        val valueAsString = value.asInstanceOf[String]
+        Jackson.parse[Map[String, Any]](valueAsString)
 
       case _ =>
         throw new IllegalArgumentException(s"value must be Map or Struct, but was[${valueSchema.`type`}]")

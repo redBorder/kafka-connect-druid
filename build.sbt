@@ -39,7 +39,18 @@ libraryDependencies ++= Seq(
     exclude("com.amazonaws", "aws-java-sdk-core")
     exclude("org.apache.httpcomponents", "httpclient")
     exclude("org.apache.commons", "commons-dbcp2")
-    exclude("io.airlift", "airline"),
+    exclude("io.airlift", "airline")
+    exclude("com.sun.jersey", "jersey-core")
+    exclude("com.sun.jersey","jersey-server")
+    exclude("com.sun.jersey.contribs", "jersey-guice")
+    exclude("org.eclipse.jetty","jetty-server")
+    exclude("org.eclipse.jetty","jetty-servlets")
+    exclude("org.eclipse.jetty","jetty-util")
+    exclude("org.eclipse.jetty","jetty-io")
+    exclude("org.eclipse.jetty","jetty-http")
+    exclude("org.eclipse.jetty","jetty-client")
+    exclude("org.eclipse.jetty","jetty-continuation"),
+
   "org.apache.kafka" % "connect-api" % kafkaVersion
 )
 
@@ -53,6 +64,7 @@ libraryDependencies ++= Seq(
 assemblyMergeStrategy in assembly := {
   case PathList("org", "eclipse", "aether", xs@_*) => MergeStrategy.first
   case PathList("META-INF", "sisu", xs@_*) => MergeStrategy.discard
+  case PathList("javax", xs@_*) => MergeStrategy.deduplicate
   case "META-INF/services/io.druid.initialization.DruidModule" => MergeStrategy.concat
   case x =>
     val oldStrategy = (assemblyMergeStrategy in assembly).value
