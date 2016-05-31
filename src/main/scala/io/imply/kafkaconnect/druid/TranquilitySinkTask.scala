@@ -99,7 +99,7 @@ class TranquilitySinkTask extends SinkTask with Logging
   }
 
   override def stop(): Unit = {
-    sender.stop()
+    if (sender != null) sender.stop()
   }
 
   override def version(): String = {

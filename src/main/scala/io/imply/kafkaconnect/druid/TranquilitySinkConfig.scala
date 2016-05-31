@@ -16,7 +16,7 @@
 
 package io.imply.kafkaconnect.druid
 
-import com.metamx.common.scala.Jackson
+import com.metamx.common.scala.{Jackson, Logging}
 import com.metamx.common.scala.collection.implicits._
 import com.metamx.common.scala.untyped.Dict
 import com.metamx.tranquility.config.DataSourceConfig
@@ -25,11 +25,23 @@ import com.metamx.tranquility.config.TranquilityConfig
 import io.imply.kafkaconnect.druid.TranquilitySinkConfig._
 import java.io.ByteArrayInputStream
 
-class TranquilitySinkConfig(val props: Map[String, String])
+class TranquilitySinkConfig(val props: Map[String, String]) extends Logging
 {
   def specString: String = getRequiredProperty(SpecStringProperty)
 
   lazy val tranquilityConfig: DataSourceConfig[PropertiesBasedConfig] = {
+    log.info("CONFIG: %s", new String(        Jackson.bytes(
+      Dict(
+        "properties" -> props,
+        "dataSources" -> Seq(
+          Dict(
+            "spec" -> Jackson.parse[Dict](specString),
+            "properties" -> Nil
+          )
+        )
+      )
+    ), "UTF-8"))
+
     TranquilityConfig.read(
       new ByteArrayInputStream(
         Jackson.bytes(
